@@ -1,0 +1,379 @@
+Skip to left side bar
+
+
+
+
+Filter files by name
+/work/
+Name
+...
+
+
+
+
+
+
+
+
+
+
+Code
+
+
+Python 3 (ipykernel)
+
+print('thsi')
+thsi
+EDA With Red Wine Data
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult: [Web Link] or the reference [Cortez et al., 2009]. Due to privacy and logistic issues, only physicochemical (inputs) and sensory (the output) variables are available (e.g. there is no data about grape types, wine brand, wine selling price, etc.).
+These datasets can be viewed as classification or regression tasks. The classes are ordered and not balanced (e.g. there are many more normal wines than excellent or poor ones). Outlier detection algorithms could be used to detect the few excellent or poor wines. Also, we are not sure if all input variables are relevant. So it could be interesting to test feature selection methods.
+For more information, read [Cortez et al., 2009]. Input variables (based on physicochemical tests): 1 - fixed acidity 2 - volatile acidity 3 - citric acid 4 - residual sugar 5 - chlorides 6 - free sulfur dioxide 7 - total sulfur dioxide 8 - density 9 - pH 10 - sulphates 11 - alcohol Output variable (based on sensory data): 12 - quality (score between 0 and 10)
+
+import pandas as pd
+df=pd.read_csv('winequality-red.csv')
+df.head()
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+0	7.4	0.70	0.00	1.9	0.076	11.0	34.0	0.9978	3.51	0.56	9.4	5
+1	7.8	0.88	0.00	2.6	0.098	25.0	67.0	0.9968	3.20	0.68	9.8	5
+2	7.8	0.76	0.04	2.3	0.092	15.0	54.0	0.9970	3.26	0.65	9.8	5
+3	11.2	0.28	0.56	1.9	0.075	17.0	60.0	0.9980	3.16	0.58	9.8	6
+4	7.4	0.70	0.00	1.9	0.076	11.0	34.0	0.9978	3.51	0.56	9.4	5
+## Summary fo the dataset
+df.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1599 entries, 0 to 1598
+Data columns (total 12 columns):
+ #   Column                Non-Null Count  Dtype  
+---  ------                --------------  -----  
+ 0   fixed acidity         1599 non-null   float64
+ 1   volatile acidity      1599 non-null   float64
+ 2   citric acid           1599 non-null   float64
+ 3   residual sugar        1599 non-null   float64
+ 4   chlorides             1599 non-null   float64
+ 5   free sulfur dioxide   1599 non-null   float64
+ 6   total sulfur dioxide  1599 non-null   float64
+ 7   density               1599 non-null   float64
+ 8   pH                    1599 non-null   float64
+ 9   sulphates             1599 non-null   float64
+ 10  alcohol               1599 non-null   float64
+ 11  quality               1599 non-null   int64  
+dtypes: float64(11), int64(1)
+memory usage: 150.0 KB
+## descriptive summary fo the dataset 
+df.describe()
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+count	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000	1599.000000
+mean	8.319637	0.527821	0.270976	2.538806	0.087467	15.874922	46.467792	0.996747	3.311113	0.658149	10.422983	5.636023
+std	1.741096	0.179060	0.194801	1.409928	0.047065	10.460157	32.895324	0.001887	0.154386	0.169507	1.065668	0.807569
+min	4.600000	0.120000	0.000000	0.900000	0.012000	1.000000	6.000000	0.990070	2.740000	0.330000	8.400000	3.000000
+25%	7.100000	0.390000	0.090000	1.900000	0.070000	7.000000	22.000000	0.995600	3.210000	0.550000	9.500000	5.000000
+50%	7.900000	0.520000	0.260000	2.200000	0.079000	14.000000	38.000000	0.996750	3.310000	0.620000	10.200000	6.000000
+75%	9.200000	0.640000	0.420000	2.600000	0.090000	21.000000	62.000000	0.997835	3.400000	0.730000	11.100000	6.000000
+max	15.900000	1.580000	1.000000	15.500000	0.611000	72.000000	289.000000	1.003690	4.010000	2.000000	14.900000	8.000000
+df.shape
+(1599, 12)
+## :list down all the columns names
+df.columns
+Index(['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
+       'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
+       'pH', 'sulphates', 'alcohol', 'quality'],
+      dtype='object')
+df['quality'].unique()
+array([5, 6, 7, 4, 8, 3])
+## Missing values in the dataset 
+df.isnull().sum()
+fixed acidity           0
+volatile acidity        0
+citric acid             0
+residual sugar          0
+chlorides               0
+free sulfur dioxide     0
+total sulfur dioxide    0
+density                 0
+pH                      0
+sulphates               0
+alcohol                 0
+quality                 0
+dtype: int64
+## Duplicate records 
+df[df.duplicated()]
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+4	7.4	0.700	0.00	1.90	0.076	11.0	34.0	0.99780	3.51	0.56	9.4	5
+11	7.5	0.500	0.36	6.10	0.071	17.0	102.0	0.99780	3.35	0.80	10.5	5
+27	7.9	0.430	0.21	1.60	0.106	10.0	37.0	0.99660	3.17	0.91	9.5	5
+40	7.3	0.450	0.36	5.90	0.074	12.0	87.0	0.99780	3.33	0.83	10.5	5
+65	7.2	0.725	0.05	4.65	0.086	4.0	11.0	0.99620	3.41	0.39	10.9	5
+...	...	...	...	...	...	...	...	...	...	...	...	...
+1563	7.2	0.695	0.13	2.00	0.076	12.0	20.0	0.99546	3.29	0.54	10.1	5
+1564	7.2	0.695	0.13	2.00	0.076	12.0	20.0	0.99546	3.29	0.54	10.1	5
+1567	7.2	0.695	0.13	2.00	0.076	12.0	20.0	0.99546	3.29	0.54	10.1	5
+1581	6.2	0.560	0.09	1.70	0.053	24.0	32.0	0.99402	3.54	0.60	11.3	5
+1596	6.3	0.510	0.13	2.30	0.076	29.0	40.0	0.99574	3.42	0.75	11.0	6
+240 rows × 12 columns
+
+## Remove the duplicates 
+df.drop_duplicates(inplace=True)
+df
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+0	7.4	0.700	0.00	1.9	0.076	11.0	34.0	0.99780	3.51	0.56	9.4	5
+1	7.8	0.880	0.00	2.6	0.098	25.0	67.0	0.99680	3.20	0.68	9.8	5
+2	7.8	0.760	0.04	2.3	0.092	15.0	54.0	0.99700	3.26	0.65	9.8	5
+3	11.2	0.280	0.56	1.9	0.075	17.0	60.0	0.99800	3.16	0.58	9.8	6
+5	7.4	0.660	0.00	1.8	0.075	13.0	40.0	0.99780	3.51	0.56	9.4	5
+...	...	...	...	...	...	...	...	...	...	...	...	...
+1593	6.8	0.620	0.08	1.9	0.068	28.0	38.0	0.99651	3.42	0.82	9.5	6
+1594	6.2	0.600	0.08	2.0	0.090	32.0	44.0	0.99490	3.45	0.58	10.5	5
+1595	5.9	0.550	0.10	2.2	0.062	39.0	51.0	0.99512	3.52	0.76	11.2	6
+1597	5.9	0.645	0.12	2.0	0.075	32.0	44.0	0.99547	3.57	0.71	10.2	5
+1598	6.0	0.310	0.47	3.6	0.067	18.0	42.0	0.99549	3.39	0.66	11.0	6
+1359 rows × 12 columns
+
+df.shape
+(1359, 12)
+## Correlation b/w the values 
+df.corr()
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+fixed acidity	1.000000	-0.255124	0.667437	0.111025	0.085886	-0.140580	-0.103777	0.670195	-0.686685	0.190269	-0.061596	0.119024
+volatile acidity	-0.255124	1.000000	-0.551248	-0.002449	0.055154	-0.020945	0.071701	0.023943	0.247111	-0.256948	-0.197812	-0.395214
+citric acid	0.667437	-0.551248	1.000000	0.143892	0.210195	-0.048004	0.047358	0.357962	-0.550310	0.326062	0.105108	0.228057
+residual sugar	0.111025	-0.002449	0.143892	1.000000	0.026656	0.160527	0.201038	0.324522	-0.083143	-0.011837	0.063281	0.013640
+chlorides	0.085886	0.055154	0.210195	0.026656	1.000000	0.000749	0.045773	0.193592	-0.270893	0.394557	-0.223824	-0.130988
+free sulfur dioxide	-0.140580	-0.020945	-0.048004	0.160527	0.000749	1.000000	0.667246	-0.018071	0.056631	0.054126	-0.080125	-0.050463
+total sulfur dioxide	-0.103777	0.071701	0.047358	0.201038	0.045773	0.667246	1.000000	0.078141	-0.079257	0.035291	-0.217829	-0.177855
+density	0.670195	0.023943	0.357962	0.324522	0.193592	-0.018071	0.078141	1.000000	-0.355617	0.146036	-0.504995	-0.184252
+pH	-0.686685	0.247111	-0.550310	-0.083143	-0.270893	0.056631	-0.079257	-0.355617	1.000000	-0.214134	0.213418	-0.055245
+sulphates	0.190269	-0.256948	0.326062	-0.011837	0.394557	0.054126	0.035291	0.146036	-0.214134	1.000000	0.091621	0.248835
+alcohol	-0.061596	-0.197812	0.105108	0.063281	-0.223824	-0.080125	-0.217829	-0.504995	0.213418	0.091621	1.000000	0.480343
+quality	0.119024	-0.395214	0.228057	0.013640	-0.130988	-0.050463	-0.177855	-0.184252	-0.055245	0.248835	0.480343	1.000000
+## for visualized manner to see the correlation 
+import seaborn as sns 
+sns.heatmap(df.corr())
+<AxesSubplot: >
+
+sns.heatmap(df.corr(),annot=True)
+<AxesSubplot: >
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10,6))
+sns.heatmap(df.corr(),annot=True)
+<AxesSubplot: >
+
+## Visualization - 
+## Conclusion - It is an imbalanced datyset
+df.quality.value_counts().plot(kind='bar')
+plt.xlabel('Wine Quality')
+plt.ylabel('counts')
+plt.show()
+
+## Distribution of each and evry column 
+df.head()
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+0	7.4	0.70	0.00	1.9	0.076	11.0	34.0	0.9978	3.51	0.56	9.4	5
+1	7.8	0.88	0.00	2.6	0.098	25.0	67.0	0.9968	3.20	0.68	9.8	5
+2	7.8	0.76	0.04	2.3	0.092	15.0	54.0	0.9970	3.26	0.65	9.8	5
+3	11.2	0.28	0.56	1.9	0.075	17.0	60.0	0.9980	3.16	0.58	9.8	6
+5	7.4	0.66	0.00	1.8	0.075	13.0	40.0	0.9978	3.51	0.56	9.4	5
+for column in df.columns:
+    sns.histplot(df[column],kde=True)
+
+sns.histplot(df['alcohol'])
+<AxesSubplot: xlabel='alcohol', ylabel='Count'>
+
+## Univariate,bivariate analysis
+sns.pairplot(df)
+<seaborn.axisgrid.PairGrid at 0x7f5575e206d0>
+## categerocal plot
+sns.catplot(x='quality',y='alcohol',data=df,kind='box')
+<seaborn.axisgrid.FacetGrid at 0x7f5573b784c0>
+
+sns.scatterplot(x='alcohol',y='pH',hue='quality',data=df)
+<AxesSubplot: xlabel='alcohol', ylabel='pH'>
+
+df.head()
+fixed acidity	volatile acidity	citric acid	residual sugar	chlorides	free sulfur dioxide	total sulfur dioxide	density	pH	sulphates	alcohol	quality
+0	7.4	0.70	0.00	1.9	0.076	11.0	34.0	0.9978	3.51	0.56	9.4	5
+1	7.8	0.88	0.00	2.6	0.098	25.0	67.0	0.9968	3.20	0.68	9.8	5
+2	7.8	0.76	0.04	2.3	0.092	15.0	54.0	0.9970	3.26	0.65	9.8	5
+3	11.2	0.28	0.56	1.9	0.075	17.0	60.0	0.9980	3.16	0.58	9.8	6
+5	7.4	0.66	0.00	1.8	0.075	13.0	40.0	0.9978	3.51	0.56	9.4	5
+EDA Student Performance Indicator
+
+Problem statement This project understands how the student's performance (test scores) is affected by other variables such as Gender, Ethnicity, Parental level of education, Lunch and Test preparation course.
+Data Collection Dataset Source - https://www.kaggle.com/datasets/spscientist/students-performance-in-exams?datasetId=74977 The data consists of 8 column and 1000 rows.
+Dataset Information gender : sex of students -> (Male/female) race/ethnicity : ethnicity of students -> (Group A, B,C, D,E) parental level of education : parents' final education ->(bachelor's degree,some college,master's degree,associate's degree,high school) lunch : having lunch before test (standard or free/reduced) test preparation course : complete or not complete before test math score reading score writing score
+import numpy as np
+import pandas as pd 
+import seaborn as sns 
+import matplotlib.pyplot as plt
+%matplotlib inline
+import warnings 
+warnings.filterwarnings('ignore')
+df=pd.read_csv('stud.csv')
+df.head()
+gender	race_ethnicity	parental_level_of_education	lunch	test_preparation_course	math_score	reading_score	writing_score
+0	female	group B	bachelor's degree	standard	none	72	72	74
+1	female	group C	some college	standard	completed	69	90	88
+2	female	group B	master's degree	standard	none	90	95	93
+3	male	group A	associate's degree	free/reduced	none	47	57	44
+4	male	group C	some college	standard	none	76	78	75
+df.shape
+(1000, 8)
+3. Data Checks to perform
+Check Missing values
+Check Duplicates
+Check data type
+Check the number of unique values of each column
+Check statistics of data set
+Check various categories present in the different categorical column
+df.isnull().sum()
+​
+gender                         0
+race_ethnicity                 0
+parental_level_of_education    0
+lunch                          0
+test_preparation_course        0
+math_score                     0
+reading_score                  0
+writing_score                  0
+dtype: int64
+insights or observations
+There are no missing values
+
+df.duplicated()
+0      False
+1      False
+2      False
+3      False
+4      False
+       ...  
+995    False
+996    False
+997    False
+998    False
+999    False
+Length: 1000, dtype: bool
+df.duplicated().sum()
+0
+there are no duplicates values in the dataset
+
+## type of datatype 
+df.info() ## object is a categerical data 
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1000 entries, 0 to 999
+Data columns (total 8 columns):
+ #   Column                       Non-Null Count  Dtype 
+---  ------                       --------------  ----- 
+ 0   gender                       1000 non-null   object
+ 1   race_ethnicity               1000 non-null   object
+ 2   parental_level_of_education  1000 non-null   object
+ 3   lunch                        1000 non-null   object
+ 4   test_preparation_course      1000 non-null   object
+ 5   math_score                   1000 non-null   int64 
+ 6   reading_score                1000 non-null   int64 
+ 7   writing_score                1000 non-null   int64 
+dtypes: int64(3), object(5)
+memory usage: 62.6+ KB
+## for checking unique values in every data set use nunique 
+df.nunique()
+gender                          2
+race_ethnicity                  5
+parental_level_of_education     6
+lunch                           2
+test_preparation_course         2
+math_score                     81
+reading_score                  72
+writing_score                  77
+dtype: int64
+df.describe()
+math_score	reading_score	writing_score
+count	1000.00000	1000.000000	1000.000000
+mean	66.08900	69.169000	68.054000
+std	15.16308	14.600192	15.195657
+min	0.00000	17.000000	10.000000
+25%	57.00000	59.000000	57.750000
+50%	66.00000	70.000000	69.000000
+75%	77.00000	79.000000	79.000000
+max	100.00000	100.000000	100.000000
+Insights or Observation
+From the above description of numerical data,all means are very close to each other- between 66 and 69
+All the standard deviation are also close- between 14.6- 15.19
+While there is a minimum of 0 for maths,other are having 17 and 10 value
+## Ex[plore more info about the data 
+df.head()
+gender	race_ethnicity	parental_level_of_education	lunch	test_preparation_course	math_score	reading_score	writing_score
+0	female	group B	bachelor's degree	standard	none	72	72	74
+1	female	group C	some college	standard	completed	69	90	88
+2	female	group B	master's degree	standard	none	90	95	93
+3	male	group A	associate's degree	free/reduced	none	47	57	44
+4	male	group C	some college	standard	none	76	78	75
+[feature for feature in df.columns]
+['gender',
+ 'race_ethnicity',
+ 'parental_level_of_education',
+ 'lunch',
+ 'test_preparation_course',
+ 'math_score',
+ 'reading_score',
+ 'writing_score']
+[feature for feature in df.columns]
+['gender',
+ 'race_ethnicity',
+ 'parental_level_of_education',
+ 'lunch',
+ 'test_preparation_course',
+ 'math_score',
+ 'reading_score',
+ 'writing_score']
+numerical_feature=[feature for feature in df.columns if df[feature].dtype != 'O']
+categerical_feature=[feature for feature in df.columns if df[feature].dtype == 'O']
+numerical_feature,categerical_feature
+(['math_score', 'reading_score', 'writing_score'],
+ ['gender',
+  'race_ethnicity',
+  'parental_level_of_education',
+  'lunch',
+  'test_preparation_course'])
+## aggregate total score with mean 
+​
+df['total_score']=(df['math_score'] + df['reading_score'] + df['writing_score'])
+df['average']=df['total_score']/3
+df.head()
+gender	race_ethnicity	parental_level_of_education	lunch	test_preparation_course	math_score	reading_score	writing_score	total_score	average
+0	female	group B	bachelor's degree	standard	none	72	72	74	218	72.666667
+1	female	group C	some college	standard	completed	69	90	88	247	82.333333
+2	female	group B	master's degree	standard	none	90	95	93	278	92.666667
+3	male	group A	associate's degree	free/reduced	none	47	57	44	148	49.333333
+4	male	group C	some college	standard	none	76	78	75	229	76.333333
+## explore more visualization 
+​
+fig,axis=plt.subplots(1,2,figsize=(15,7))
+plt.subplot(121)
+sns.histplot(data=df,x='average',bins=30,kde=True,color='g')
+plt.subplot(122)
+sns.histplot(data=df,x='average',bins=30,kde=True,hue='gender')
+plt.show()
+
+Insights
+female students tend to perform well than male students
+plt.subplots(1,3,figsize=(25,6))
+plt.subplot(141)
+sns.histplot(data=df,x='average',kde=True,hue='lunch')
+plt.subplot(142)
+sns.histplot(data=df[df.gender=='female'],x='average',kde=True,hue='lunch')
+plt.subplot(143)
+sns.histplot(data=df[df.gender=='male'],x='average',kde=True,hue='lunch')
+plt.show()
+
+Insights
+standard lunch helps students perform well in exams '
+standard lunch helps perform well in exams in both male and female
+plt.subplots(1,3,figsize=(25,6))
+plt.subplot(141)
+sns.histplot(data=df,x='average',kde=True,hue='parental_level_of_education')
+plt.subplot(142)
+sns.histplot(data=df[df.gender=='female'],x='average',kde=True,hue='parental_level_of_education')
+plt.subplot(143)
+sns.histplot(data=df[df.gender=='male'],x='average',kde=True,hue='parental_level_of_education')
+plt.show()
